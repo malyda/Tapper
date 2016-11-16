@@ -18,12 +18,10 @@ namespace Tapper.Views
 
             TappedView.GestureRecognizers.Add(new TapGestureRecognizer
             {
-               // Command = new Command(Tap)
+                Command = new Command(Tap)
             });
 
-            var tapGestureRecognizer = new TapGestureRecognizer();
-            tapGestureRecognizer.Tapped += (sender, e) => show(e);
-            TappedLabel.GestureRecognizers.Add(tapGestureRecognizer);
+            SetTappedGestureRecognizer();
         }
 
         private void show(EventArgs e)
@@ -31,28 +29,60 @@ namespace Tapper.Views
             TappedLabel.Text = e.ToString();
             
         }
-        private void Tap()
+        private async void Tap()
         {
         
-            Label labelToAnimate = createLabel();
-            AbsoluteLayout.SetLayoutBounds(labelToAnimate, new Rectangle(.5,.5,.1,.1));
-            AbsoluteLayout.SetLayoutFlags(labelToAnimate ,AbsoluteLayoutFlags.All);
-           TappedView.Children.Add(labelToAnimate);
+            Label labelToAnimate = createTapZone();
+
+            TappedView.Children.Add(labelToAnimate);
 
 
-            labelToAnimate.FadeTo(0, 1000);
-           
-            //Label.Frame = new RectangleF (Label.Frame.X, Label.Frame.Y + 30, Label.Frame.Width, Label.Frame.Height);
+            await labelToAnimate.FadeTo(1, 1000);
+            await labelToAnimate.FadeTo(0, 1000);
+            TappedView.Children.Remove(labelToAnimate);
         }
 
-        private Label createLabel()
+        private Label createTapZone()
         {
-            return new Label
-             {
-                 Text = "tap",
-                 TextColor = Color.Black,
-                 IsVisible = true
-             };
+            Label label = new Label
+            {
+                Text = "tap",
+                TextColor = Color.Black,
+                Opacity = 0,
+                HorizontalTextAlignment = TextAlignment.Center,
+                VerticalTextAlignment = TextAlignment.Center,
+                BackgroundColor = Color.Blue
+            };
+            SetCords(label);
+            SetClickedMethod(label);
+            return label;
+        }
+
+        private void SetCords(View view)
+        {
+            AbsoluteLayout.SetLayoutBounds(view, new Rectangle(.5, .5, .2, .2));
+            AbsoluteLayout.SetLayoutFlags(view, AbsoluteLayoutFlags.All);
+        }
+
+        private void SetClickedMethod(View view)
+        {
+            var tapGestureRecognizer = new TapGestureRecognizer();
+            tapGestureRecognizer.Tapped += (s, e) => {
+                TappedView1(view); 
+            };
+            view.GestureRecognizers.Add(tapGestureRecognizer);
+        }
+        int _tappedScore = 0;
+        private void TappedView1(View view)
+        {
+            _tappedScore++;
+            TappedView.Children.Remove(view);
+            TappedLabel.Text = _tappedScore+"";
+        }
+
+        private SetGestureRecognizer()
+        {
+
         }
     }
 }
